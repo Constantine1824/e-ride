@@ -6,6 +6,10 @@ from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework.permissions import IsAuthenticated
 from .models import User, Driver, Client
 from .serializers import *
+from signals.auth_signals import send_mail
+from base.utils import UrlSign
+
+encoder = UrlSign()
 
 class SignUpView(APIView):
 
@@ -107,4 +111,34 @@ class ClientProfileView(APIView):
             },
             status = status.HTTP_200_OK
         )
+    
+class VerifyMailView(APIView):
+    def get(self, request, token):
+        try:
+            username = encoder.url_decode(token)
+            user = User.objects.get(username=username)
+            user.is_active = True
+            return Response(
+                {
+                    "status" : "success",
+                    "details" : "user verified"
+                },
+                status=status.HTTP_200_OK
+            )
+        except User.DoesNotExist:
+            return Response(
+                {
+                    "status": "failed",
+                    "details" : "User does not exist"
+                },
+                status = status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {
+                    "status" : "failed",
+                    "details" : str(e)
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 # Create your views here.

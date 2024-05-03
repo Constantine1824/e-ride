@@ -7,7 +7,7 @@ from datetime import datetime
 class UrlSign:
     def urlsafe_encode(self,value:str):
         value_bytes = force_bytes(value, encoding='utf-8')
-        return urlsafe_base64_encode(value_bytes).decode('utf-8', errors='ignore')
+        return urlsafe_base64_encode(value_bytes)
     
     def urlsafe_decode(self,value:bytes):
         decoded_bytes = urlsafe_base64_decode(value)

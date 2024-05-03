@@ -6,7 +6,6 @@ from rest_framework_simplejwt.serializers import TokenBlacklistSerializer
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
 
-
 driver, creted_ = Role.objects.get_or_create(name='driver')
 client, created = Role.objects.get_or_create(name='client')
 
