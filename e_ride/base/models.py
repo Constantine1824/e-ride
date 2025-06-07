@@ -4,9 +4,11 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from .managers import UserManager
+from .fields import LocationField
+from .mixins import LocationMixin
 import uuid
 from cloudinary.models import CloudinaryField
-from django.contrib.auth.hashers import make_password
+#from django.contrib.auth.hashers import make_password
 from enum import Enum
 
 
@@ -39,14 +41,14 @@ class BaseUser(AbstractBaseUser, BaseModel, PermissionsMixin):
     class Meta:
         abstract = True
 
-class BaseAccounts(BaseModel):
+class BaseProfile(BaseModel, LocationMixin):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=50, blank=False, null=False)
     middle_name = models.CharField(_('middle name'), max_length=50, blank=True, null=True)
     last_name = models.CharField(_('last name'), max_length=50, blank=False, null=False)
     profile_img = CloudinaryField('image')
     gender = models.CharField(max_length=52, choices = [(choice.name, choice.value) for choice in GenderChoices])
-
+    location = LocationField()  # Current location field
 
     class Meta:
         abstract = True

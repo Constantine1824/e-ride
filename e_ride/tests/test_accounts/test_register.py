@@ -6,7 +6,6 @@ from rest_framework import fields
 class TestRegisterViews:
 
     def test_client_register(self, auth_token, client, dummy_image):
-        from apps.Accounts.serializers import ClientSerializer
         url = reverse('client register')
         profile_img = dummy_image('client.jpeg')
         print(profile_img.file)

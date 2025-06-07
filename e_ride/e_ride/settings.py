@@ -41,8 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt',
     'apps.Accounts',
-    'rest_framework_simplejwt'
+    'apps.Rides',
 ]
 
 REST_FRAMEWORK = {
@@ -87,8 +88,12 @@ WSGI_APPLICATION = 'e_ride.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME'),
+        'HOST' : config('DB_HOST'),
+        'USER' : config('DB_USER'),
+        'PASSWORD' : config('DB_PASSWORD'),
+        'PORT' : config('DB_PORT')
     }
 }
 

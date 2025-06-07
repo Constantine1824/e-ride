@@ -1,13 +1,12 @@
 from rest_framework import serializers
-from .models import User, Driver, Client, Role
+from .models import User, Driver, Client, UserRole
 from rest_framework import exceptions
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.serializers import TokenBlacklistSerializer
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
 
-driver, creted_ = Role.objects.get_or_create(name='driver')
-client, created = Role.objects.get_or_create(name='client')
+# driver, creted_ = Role.objects.get_or_create(name='driver')
+# client, created = Role.objects.get_or_create(name='client')
 
 class UserCreateSerializer(serializers.ModelSerializer):
 
@@ -60,7 +59,7 @@ class DriverCreateSerializer(serializers.ModelSerializer):
             user = self.context['request'].user
             instance = self.Meta.model(**validated_data)
             instance.user = user
-            instance.user.role = driver
+            instance.user.role = UserRole.objects.create(name='driver')
             instance.save()
             return instance
         
@@ -85,7 +84,7 @@ class ClientCreateSerializer(serializers.ModelSerializer):
         user = self.context.get('request', {})['user']
         instance = self.Meta.model(**validated_data)
         instance.user = user
-        instance.user.role = client
+        instance.user.role = UserRole.objects.create(name='client')
         instance.save()
         return instance
     
