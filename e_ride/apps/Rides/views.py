@@ -4,12 +4,11 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from apps.Accounts.models import Client, Driver
-from serializers import NearestInstanceSerializer, RideCreateSerializer
+from apps.Rides.serializers import NearestInstanceSerializer, RideCreateSerializer
 
 class NearestDriverView(APIView):
     permission_classes = [IsAuthenticated]
-    def put(request):
-        
+    def put(self, request):
         client_obj = Client.objects.get(user=request.user)
         lon, lat = request.data['lon', 'lat']
         client_obj.location = (lon, lat) 
@@ -21,7 +20,7 @@ class NearestDriverView(APIView):
         }
         return Response(data=data, status=status.HTTP_200_OK)
         
-    def get(request):
+    def get(self, request):
         # Assume User's location is updated
         client_obj = Client.objects.get(user=request.user)
         nearest_drivers = client_obj.find_nearest_instances(Driver, limit=7)

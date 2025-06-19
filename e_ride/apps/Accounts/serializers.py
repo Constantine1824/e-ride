@@ -46,8 +46,8 @@ class DriverCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Driver
         fields = ["first_name", "middle_name", \
-                  "last_name", "profile_img", "nin",\
-                  "drivers_license", "is_verified", "user"]
+                  "last_name", "nin",\
+                   "is_verified", "user"]
         extra_kwargs = {
             "is_verified" : {
                 "read_only" : True
@@ -78,7 +78,7 @@ class ClientCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Client
-        fields = "__all__"
+        fields = ['user', 'first_name', 'middle_name', 'last_name']
 
     def create(self, validated_data):
         user = self.context.get('request', {})['user']
@@ -102,7 +102,6 @@ class LoginSerializer(serializers.Serializer):
     def _authenticate(self):
         email = self.validated_data['email']
         password = self.validated_data['password']
-        user =User.objects.get(email='ayomidet905@gmail.com')
         user = authenticate(email=email, password=password)
         
         if user is not None:

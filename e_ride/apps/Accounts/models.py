@@ -28,7 +28,7 @@ class User(BaseUser):
         verbose_name_plural = 'Users'
 
 class Driver(BaseProfile):
-    nin = models.IntegerField(null=False, blank=False)
+    nin = models.BigIntegerField(null=False, blank=False)
     drivers_license = CloudinaryField('image')
     is_verified = models.BooleanField(default=False)
     car_type = models.CharField(max_length=250)
