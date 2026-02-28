@@ -21,7 +21,6 @@ class Ride(BaseModel):
     
     @property
     def ride_distance(self):
-        """Calculate the total ride distance in kilometers"""
         if not (self.pickup_location and self.dropoff_location):
             return None
         
@@ -68,10 +67,11 @@ class Ride(BaseModel):
 
     def calculate_price(self):
         """Calculate the total price of the ride"""
+        from decimal import Decimal
         if not (self.ride_distance and self.driver.price_per_km):
             return None
        
-        self.price= self.ride_distance * self.driver.price_per_km
+        self.price = Decimal(str(self.ride_distance)) * self.driver.price_per_km
     
     
 # Create your models here.

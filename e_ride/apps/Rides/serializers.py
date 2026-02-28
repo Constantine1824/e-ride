@@ -37,10 +37,11 @@ class RideCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ride
-        fields = ['driver', 'pickup_location', 'dropoff_location', 'price', 'status']
-        extra_kwargs = {'status': {
-            'read_only' : True
-        }}
+        fields = ['id', 'driver', 'pickup_location', 'dropoff_location', 'price', 'status']
+        extra_kwargs = {
+            'status': {'read_only': True},
+            'price': {'read_only': True},
+        }
     
     def create(self, validated_data):
         driver_obj = validated_data.pop('driver')
@@ -49,6 +50,7 @@ class RideCreateSerializer(serializers.ModelSerializer):
         instance = self.Meta.model(**validated_data)
         instance.driver = driver_obj
         instance.client = client_obj
+        instance.calculate_price()
         instance.save()
         return instance
 
