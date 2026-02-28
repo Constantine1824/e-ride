@@ -8,7 +8,7 @@ class TestRegisterViews:
     def test_client_register(self, auth_token, client, dummy_image):
         url = reverse('client register')
         profile_img = dummy_image('client.jpeg')
-        print(profile_img.file)
+        #print(profile_img.file)
         data = {
             "first_name" : 'Ayomide',
             "middle_name" : 'Emman',
@@ -18,7 +18,7 @@ class TestRegisterViews:
         }
         # serializer = ClientSerializer(data)
         resp = client.post(url, data, format='multipart')
-        print(resp.json())
+        #print(resp.json())
         assert resp.status_code == 201
         assert resp.json()['data']['user']['role'] == 'client'
 

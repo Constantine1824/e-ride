@@ -39,7 +39,22 @@ class UserSerializer(serializers.Serializer):
     username = serializers.CharField()
     email = serializers.CharField()
     is_active = serializers.BooleanField()
-    role = serializers.CharField(allow_null=True)  
+    role = serializers.SerializerMethodField()
+
+    def get_role(self, obj):
+        # Handle both User model instances and dictionaries
+        if hasattr(obj, 'role') and obj.role:
+            # If it's a model instance, get the role name
+            return getattr(obj.role, 'name', str(obj.role)).lower() if obj.role else None
+        elif isinstance(obj, dict) and 'role' in obj:
+            # If it's a dictionary with role key
+            role_value = obj['role']
+            return role_value.lower() if role_value else None
+        elif hasattr(obj, '__getitem__') and 'role' in obj:
+            # For other dict-like objects
+            role_value = obj['role']
+            return role_value.lower() if role_value else None
+        return None  
 
 class DriverCreateSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
@@ -56,11 +71,21 @@ class DriverCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         try: 
-            user = self.context['request'].user
+            request = self.context.get('request')
+            user = getattr(request, 'user', None)
+            if not user:
+                raise exceptions.ValidationError("User not found in request context")
+            
+            # Get or create the user role for driver
+            driver_role, created = UserRole.objects.get_or_create(name='Driver')
             instance = self.Meta.model(**validated_data)
             instance.user = user
-            instance.user.role = UserRole.objects.create(name='driver')
+            user.role = driver_role
+            user.save()  # Save the user with the role first
             instance.save()
+            
+            # Refresh the user instance to get the updated role
+            instance.user.refresh_from_db()
             return instance
         
         except Exception as e:
@@ -81,11 +106,21 @@ class ClientCreateSerializer(serializers.ModelSerializer):
         fields = ['user', 'first_name', 'middle_name', 'last_name']
 
     def create(self, validated_data):
-        user = self.context.get('request', {})['user']
+        request = self.context.get('request')
+        user = getattr(request, 'user', None)
+        if not user:
+            raise exceptions.ValidationError("User not found in request context")
+        
+        # Get or create the user role for client
+        client_role, created = UserRole.objects.get_or_create(name='Client')
         instance = self.Meta.model(**validated_data)
         instance.user = user
-        instance.user.role = UserRole.objects.create(name='client')
+        user.role = client_role
+        user.save()  # Save the user with the role first
         instance.save()
+        
+        # Refresh the user instance to get the updated role
+        instance.user.refresh_from_db()
         return instance
     
 class ClientSerializer(serializers.ModelSerializer):
