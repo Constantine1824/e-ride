@@ -21,33 +21,49 @@ class Ride(BaseModel):
     
     @property
     def ride_distance(self):
-        """Calculate the total ride distance in meters"""
+        """Calculate the total ride distance in kilometers"""
         if not (self.pickup_location and self.dropoff_location):
             return None
         
-        # Using the distance method from LocationMixin through driver instance
-        return self.driver.distance(self.dropoff_location)
+        from base.mixins import LocationMixin
+        # Create a temporary instance to calculate distance
+        temp_instance = LocationMixin()
+        temp_instance.location = self.pickup_location
+        return temp_instance.distance(self.dropoff_location)
     
     @property
     def driver_to_pickup_distance(self):
         """Calculate distance from driver to pickup location"""
         if not (self.driver.location and self.pickup_location):
             return None
-        return self.driver.distance(self.pickup_location)
+        
+        from base.mixins import LocationMixin
+        temp_instance = LocationMixin()
+        temp_instance.location = self.driver.location
+        return temp_instance.distance(self.pickup_location)
     
     @property
     def client_to_driver_distance(self):
         """Calculate current distance between client and driver"""
         if not (self.client.location and self.driver.location):
             return None
-        return self.client.distance_to(self.driver)
+        
+        from base.mixins import LocationMixin
+        temp_instance = LocationMixin()
+        temp_instance.location = self.client.location
+        return temp_instance.distance_to(self.driver)
     
     @property
     def ride_duration(self):
         """Calculate the total ride duration in seconds"""
+        # Placeholder implementation - would need actual duration calculation
+        # This could be calculated based on distance and average speed
         if not (self.pickup_location and self.dropoff_location):
             return None
-        return self.driver.duration(self.dropoff_location)
+        
+        # For now, return None until proper duration calculation is implemented
+        # This could use a mapping service API for accurate duration
+        return None
     
 
     def calculate_price(self):

@@ -43,12 +43,17 @@ class RideCreateSerializer(serializers.ModelSerializer):
         }}
     
     def create(self, validated_data):
-        driver_id = validated_data.pop('driver')
+        driver_obj = validated_data.pop('driver')
         user = self.context.get('request').user
         client_obj = Client.objects.get(user=user)
-        driver_obj = Driver.objects.get(id=driver_id)
         instance = self.Meta.model(**validated_data)
         instance.driver = driver_obj
         instance.client = client_obj
         instance.save()
         return instance
+
+
+class RideSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ride
+        fields = '__all__'
